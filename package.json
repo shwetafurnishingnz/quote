@@ -1,0 +1,10 @@
+{
+  "name": "hiren-workspace",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm --prefix indoor-quote-app run dev",
+    "build": "npm --prefix indoor-quote-app run build",
+    "test": "npm --prefix indoor-quote-app run test"
+  }
+}
