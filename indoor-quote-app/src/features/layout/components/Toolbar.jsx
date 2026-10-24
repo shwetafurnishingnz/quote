@@ -3,7 +3,7 @@ import { BlindsIcon } from "./Icons";
 
 const linkClass = ({ isActive }) => `toolbar-link${isActive ? " active" : ""}`;
 
-export default function Toolbar({ onLogout }) {
+export default function Toolbar({ userEmail, onLogout }) {
   return (
     <header className="toolbar">
       <div className="toolbar-brand">
@@ -25,9 +25,12 @@ export default function Toolbar({ onLogout }) {
         </NavLink>
       </nav>
 
-      <button type="button" className="toolbar-logout" onClick={onLogout}>
-        Log out
-      </button>
+      <div className="toolbar-user">
+        {userEmail && <span className="toolbar-email">{userEmail}</span>}
+        <button type="button" className="toolbar-logout" onClick={onLogout}>
+          Log out
+        </button>
+      </div>
     </header>
   );
 }

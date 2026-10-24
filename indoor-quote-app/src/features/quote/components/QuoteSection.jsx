@@ -76,7 +76,6 @@ export default function QuoteSection({
   return (
     <>
       <div className="page-header">
-        <span className="eyebrow">New quote</span>
         <h1 className="sheet-title">Build a quote</h1>
         <p className="sheet-subtitle">
           Pick the product, then enter each blind with its own length and sag.

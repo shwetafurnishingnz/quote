@@ -11,15 +11,18 @@ function getVarsDocRef() {
   return doc(db, VARS_COLLECTION, VARS_DOC_ID);
 }
 
+// Returns { ok, data, code }. `data` is null when the document doesn't exist
+// yet; `ok: false` means the read itself failed (e.g. permission-denied), so
+// callers must not treat it as "empty" and overwrite the shared document.
 export async function loadSyncedVars() {
   if (!isFirebaseConfigured()) {
-    return null;
+    return { ok: false, data: null, code: "sync/not-configured" };
   }
   try {
     const snapshot = await getDoc(getVarsDocRef());
-    return snapshot.exists() ? snapshot.data() : null;
+    return { ok: true, data: snapshot.exists() ? snapshot.data() : null };
   } catch (error) {
-    return null;
+    return { ok: false, data: null, code: error.code || "sync/unknown" };
   }
 }
 

@@ -1,3 +1,5 @@
+import { BlindsIcon } from "../../layout/components/Icons";
+
 export default function AuthGate({
   authUsername,
   authPassword,
@@ -15,8 +17,14 @@ export default function AuthGate({
   return (
     <div className="auth-gate">
       <div className="auth-card">
+        <div className="auth-brand">
+          <span className="brand-mark">
+            <BlindsIcon size={18} />
+          </span>
+          Indoor Blinds Quote
+        </div>
         <h1 className="auth-title">Sign in</h1>
-        <p className="auth-subtitle">Enter your operator email and password.</p>
+        <p className="auth-subtitle">This tool is for Sweta Furnishing staff only.</p>
 
         {authLoading ? (
           <p className="auth-loading">Checking your session…</p>

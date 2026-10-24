@@ -47,17 +47,49 @@ export default function App() {
     toastTimer.current = setTimeout(() => setToast(null), 4000);
   }
 
+  // undefined = still checking the saved session, null = signed out.
+  const [authUser, setAuthUser] = useState(undefined);
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authErrorMessage, setAuthErrorMessage] = useState("");
+  const [authInfoMessage, setAuthInfoMessage] = useState("");
+  const [authSubmitting, setAuthSubmitting] = useState(false);
+  const [authResetting, setAuthResetting] = useState(false);
+
+  useEffect(() => subscribeAuthState((user) => setAuthUser(user ?? null)), []);
+
   useEffect(() => {
+    if (!authUser) {
+      return undefined;
+    }
+
     let cancelled = false;
 
     async function bootstrapVarsSync() {
-      const remoteVars = await loadSyncedVars();
+      setSyncStatus("checking");
+      setSyncStatusMessage("Checking cloud sync...");
+
+      const remote = await loadSyncedVars();
       if (cancelled) {
         return;
       }
 
-      if (remoteVars) {
-        const normalized = normalizeVars(remoteVars);
+      // Firestore rules only allow the team's accounts. Anyone else who
+      // manages to sign in is signed straight back out.
+      if (remote.code === "permission-denied") {
+        await logoutFromFirebase();
+        setAuthErrorMessage("This account doesn't have access to the quote tool.");
+        return;
+      }
+
+      if (!remote.ok) {
+        setSyncStatus("local");
+        setSyncStatusMessage(getSyncErrorMessage(remote.code));
+        return;
+      }
+
+      if (remote.data) {
+        const normalized = normalizeVars(remote.data);
         setVars(normalized);
         setEditVars(normalized);
         saveVars(normalized);
@@ -86,7 +118,43 @@ export default function App() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [authUser?.uid]);
+
+  async function login(event) {
+    event.preventDefault();
+    setAuthSubmitting(true);
+    setAuthErrorMessage("");
+    setAuthInfoMessage("");
+
+    const result = await loginWithFirebase(authEmail.trim(), authPassword);
+    setAuthSubmitting(false);
+
+    if (result.ok) {
+      setAuthPassword("");
+    } else {
+      setAuthErrorMessage(getAuthErrorMessage(result.code));
+    }
+  }
+
+  async function forgotPassword() {
+    setAuthErrorMessage("");
+    setAuthInfoMessage("");
+
+    if (!authEmail.trim()) {
+      setAuthErrorMessage("Enter your email above first, then press Forgot password.");
+      return;
+    }
+
+    setAuthResetting(true);
+    const result = await sendResetEmail(authEmail.trim());
+    setAuthResetting(false);
+
+    if (result.ok) {
+      setAuthInfoMessage("If that account exists, a reset link is on its way.");
+    } else {
+      setAuthErrorMessage(getResetErrorMessage(result.code));
+    }
+  }
 
   async function logout() {
     await logoutFromFirebase();
@@ -225,10 +293,29 @@ export default function App() {
     setEditVars(normalizeVars(vars));
   }
 
+  if (!authUser) {
+    return (
+      <AuthGate
+        authUsername={authEmail}
+        authPassword={authPassword}
+        authError={Boolean(authErrorMessage)}
+        authErrorMessage={authErrorMessage}
+        authInfoMessage={authInfoMessage}
+        authLoading={authUser === undefined}
+        authSubmitting={authSubmitting}
+        authResetting={authResetting}
+        onUsernameChange={(event) => setAuthEmail(event.target.value)}
+        onPasswordChange={(event) => setAuthPassword(event.target.value)}
+        onSubmit={login}
+        onForgotPassword={forgotPassword}
+      />
+    );
+  }
+
   return (
     <>
       <div className="app-shell">
-        <Toolbar onLogout={logout} />
+        <Toolbar userEmail={authUser.email} onLogout={logout} />
 
         <main className="page-host">
           <Routes>

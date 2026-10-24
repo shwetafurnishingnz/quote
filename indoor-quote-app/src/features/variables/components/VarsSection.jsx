@@ -19,7 +19,6 @@ export default function VarsSection({
     <>
       <div className="vars-header">
         <div>
-          <span className="eyebrow">Settings</span>
           <h1 className="sheet-title">Pricing variables</h1>
           <p className="sheet-subtitle">
             These drive every quote. Changes save locally and sync to every

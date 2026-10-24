@@ -48,8 +48,30 @@ Same pattern as the outdoor app:
   `styleMultipliers`, `mountAdjustments` — see
   `src/features/variables/utils/variables.js` for the exact keys.
 
-Firestore rules and GitHub Actions secrets follow the same setup
-described for the outdoor app's handover doc.
+## Access — two accounts only
+
+The site is public on GitHub Pages, so access is enforced by Firebase,
+not by the page. Setup (all free on the Spark plan):
+
+1. **Authentication → Sign-in method**: enable **Email/Password**.
+2. **Authentication → Users → Add user**: create the two accounts
+   (admin and Shweta).
+3. **Authentication → Settings → User actions**: untick
+   **Enable create (sign-up)** so nobody can register a third account.
+4. **Authentication → Settings → Authorized domains**: add the domain
+   the site is served from (e.g. `shwetafurnishingnz.github.io`).
+5. **Firestore Database → Rules**: paste [`firestore.rules`](firestore.rules)
+   with the two real emails and publish.
+
+The app shows only the sign-in screen until someone signs in. If an
+account that isn't in the rules signs in, Firestore returns
+`permission-denied` and the app signs it out.
+
+## GitHub Actions secrets
+
+The deploy workflow (`.github/workflows/deploy-pages.yml` at the repo
+root) reads the `VITE_FIREBASE_*` values from the repository's Actions
+secrets — see `.env.example` for the list.
 
 ## Tests
 

@@ -4,7 +4,6 @@ export default function HomeSection({ onNavigate }) {
   return (
     <>
       <div className="home-hero">
-        <span className="eyebrow">Quote tool</span>
         <h1 className="sheet-title">Indoor blinds, quoted fast.</h1>
         <p className="sheet-subtitle">
           Enter each blind's dimensions, style, fabric and mount to get an
