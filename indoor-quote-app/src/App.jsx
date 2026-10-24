@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import AuthGate from "./features/auth/components/AuthGate";
 import {
@@ -36,6 +36,16 @@ export default function App() {
     blinds: [],
   });
   const [quoteResult, setQuoteResult] = useState(null);
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
+
+  function showToast(message, tone = "success") {
+    clearTimeout(toastTimer.current);
+    setToast({ message, tone, id: Date.now() });
+    toastTimer.current = setTimeout(() => setToast(null), 4000);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -201,11 +211,11 @@ export default function App() {
     if (syncResult.ok) {
       setSyncStatus("connected");
       setSyncStatusMessage("Connected");
-      window.alert("Variables updated successfully");
+      showToast("Variables saved and synced");
     } else {
       setSyncStatus("local");
       setSyncStatusMessage(getSyncErrorMessage(syncResult.code));
-      window.alert(`Variables updated locally. ${getSyncErrorMessage(syncResult.code)}`);
+      showToast(`Saved locally. ${getSyncErrorMessage(syncResult.code)}`, "warning");
     }
 
     navigate("/");
@@ -263,8 +273,15 @@ export default function App() {
           </Routes>
         </main>
 
-        <footer className="app-footer">&copy; 2026 Indoor Blinds Quote App</footer>
+        <footer className="app-footer">&copy; {new Date().getFullYear()} Indoor Blinds Quote</footer>
       </div>
+
+      {toast && (
+        <div key={toast.id} className={`toast ${toast.tone}`} role="status">
+          <span className="toast-dot" />
+          {toast.message}
+        </div>
+      )}
     </>
   );
 }

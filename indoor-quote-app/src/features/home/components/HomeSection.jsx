@@ -1,12 +1,17 @@
+import { ArrowRightIcon, CalculatorIcon, SlidersIcon } from "../../layout/components/Icons";
+
 export default function HomeSection({ onNavigate }) {
   return (
-    <div className="sheet">
-      <h1 className="sheet-title">Indoor blinds, quoted fast</h1>
-      <p className="sheet-subtitle">
-        Enter a blind's dimensions, style, fabric and mount to get an
-        instant price. Pricing variables are shared across every device
-        that's signed in.
-      </p>
+    <>
+      <div className="home-hero">
+        <span className="eyebrow">Quote tool</span>
+        <h1 className="sheet-title">Indoor blinds, quoted fast.</h1>
+        <p className="sheet-subtitle">
+          Enter each blind's dimensions, style, fabric and mount to get an
+          instant price. Pricing variables are shared across every signed-in
+          device.
+        </p>
+      </div>
 
       <div className="home-grid">
         <button
@@ -14,9 +19,14 @@ export default function HomeSection({ onNavigate }) {
           className="home-card"
           onClick={() => onNavigate("/quote")}
         >
+          <span className="home-card-icon">
+            <CalculatorIcon />
+          </span>
+          <ArrowRightIcon className="home-card-arrow" />
           <div className="home-card-title">Start a quote</div>
           <p className="home-card-desc">
-            Enter width, height, style, fabric, mount and quantity.
+            Add blinds with length, sag and brackets, then get a full price
+            breakdown.
           </p>
         </button>
 
@@ -25,13 +35,17 @@ export default function HomeSection({ onNavigate }) {
           className="home-card"
           onClick={() => onNavigate("/variables")}
         >
-          <div className="home-card-title">Edit pricing variables</div>
+          <span className="home-card-icon">
+            <SlidersIcon />
+          </span>
+          <ArrowRightIcon className="home-card-arrow" />
+          <div className="home-card-title">Pricing variables</div>
           <p className="home-card-desc">
-            Adjust base rates, fabric and style multipliers, and mount
-            adjustments.
+            Adjust material costs, overhead, GST and margin used in every
+            quote.
           </p>
         </button>
       </div>
-    </div>
+    </>
   );
 }
